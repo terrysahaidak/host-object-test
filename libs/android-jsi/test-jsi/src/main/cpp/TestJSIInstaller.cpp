@@ -1,17 +1,14 @@
 
-#include "../../../../../../node_modules/react-native/ReactCommon/jsi/jsi/jsi.h"
+#include <jsi/jsi.h>
 #include <jni.h>
 
 #include "TestJSIInstaller.h"
 
 using namespace facebook;
 
-JNIEnv *g_env;
-
 extern "C" JNIEXPORT void JNICALL
 Java_com_terrysahaidak_test_jsi_TestJSIInstaller_installBinding(JNIEnv *env, jobject thiz, jlong runtimePtr)
 {
-  g_env = env;
   auto &runtime = *(jsi::Runtime *)runtimePtr;
   auto testBinding = std::make_shared<SampleModule>();
 
@@ -20,7 +17,8 @@ Java_com_terrysahaidak_test_jsi_TestJSIInstaller_installBinding(JNIEnv *env, job
 
 void SampleModule::install(
     jsi::Runtime &runtime,
-    const std::shared_ptr<SampleModule> sampleModule)
+    const std::shared_ptr<SampleModule> sampleModule
+    )
 {
   auto testModuleName = "nativeSample";
   auto object = jsi::Object::createFromHostObject(runtime, sampleModule);
@@ -28,11 +26,13 @@ void SampleModule::install(
   runtime.global().setProperty(runtime, testModuleName, std::move(object));
 }
 
+
 jsi::Value SampleModule::get(
     jsi::Runtime &runtime,
     const jsi::PropNameID &name)
 {
   auto methodName = name.utf8(runtime);
+
 
   if (methodName == "runTest")
   {
@@ -45,15 +45,36 @@ jsi::Value SampleModule::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
-          //        auto clazz = env->FindClass("com/terrysahaidak/test/jsi/TestJSIInstaller");
-          //        auto runTest = g_env->GetMethodID(clazz, "runTest", "()Ljava/lang/String;");
-          //        auto str = (jstring)env->CallObjectMethod(clazz, runTest);
-          //
-          //        const char *cStr = env->GetStringUTFChars(str, nullptr);
 
-          return jsi::String::createFromAscii(runtime, "Hello wordl");
+//            const auto env = facebook::jni::attachCurrentThread();
+
+//            jstring str = env->NewStringUTF("test");
+//
+//            const char *cStr = env->GetStringUTFChars(str, nullptr);
+
+            return 1;
+
+//                return call_in_attached_thread([&runtime](auto env) -> jsi::Value  {
+//                    jstring str = env->NewStringUTF("test");
+//                    const char *cStr = env->GetStringUTFChars(str, nullptr);
+//
+//                    auto result = jsi::String::createFromAscii(runtime, cStr);
+//
+//                    return result;
+//                });
+
+//                  auto clazz = jniEnv.FindClass("com/terrysahaidak/test/jsi/TestJSIInstaller");
+
+//                  auto runTest = jniEnv.GetMethodID(clazz, "runTest", "()Ljava/lang/String;");
+//                  auto str = (jstring)jniEnv.CallObjectMethod(clazz, runTest);
+
         });
   }
 
   return jsi::Value::undefined();
 }
+
+//JavaVM *java_machine;
+//jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+//    java_machine = vm;
+//}

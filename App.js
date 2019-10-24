@@ -38,7 +38,11 @@ const App: () => React$Node = () => {
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>
                 {/* this is from C++ JSI bindings */}
-                {global.NativeSampleModule.runTest()}
+                {global.NativeSampleModule.getStaticField()}
+              </Text>
+              <Text style={styles.sectionTitle}>
+                {/* this is from C++ JSI bindings */}
+                {global.NativeSampleModule.getStringPrivateField()}
               </Text>
             </View>
           </View>

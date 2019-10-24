@@ -3,7 +3,13 @@
 
 #include "TestJSIInstaller.h"
 
+// global ref to Java Virtual Machine
+// used to get JNI current env
 JavaVM *jvm;
+// global ref to our class instance
+static jobject globalObjectRef;
+// global ref to our class
+static jclass globalClassRef;
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_terrysahaidak_test_jsi_TestJSIInstaller_installBinding(JNIEnv *env, jobject thiz, jlong runtimePtr)
@@ -13,7 +19,14 @@ Java_com_terrysahaidak_test_jsi_TestJSIInstaller_installBinding(JNIEnv *env, job
 
   SampleModule::install(runtime, testBinding);
 
+  // storring java vm reference
   env->GetJavaVM(&jvm);
+
+  globalObjectRef = env->NewGlobalRef(thiz);
+
+  auto clazz = env->FindClass("com/terrysahaidak/test/jsi/TestJSIInstaller");
+
+  globalClassRef = (jclass)env->NewGlobalRef(clazz);
 }
 
 JNIEnv *attachCurrentThread()
@@ -40,7 +53,7 @@ jsi::Value SampleModule::get(
 {
   auto methodName = name.utf8(runtime);
 
-  if (methodName == "runTest")
+  if (methodName == "getStaticField")
   {
     return jsi::Function::createFromHostFunction(
         runtime,
@@ -53,10 +66,31 @@ jsi::Value SampleModule::get(
             size_t count) -> jsi::Value {
           auto env = attachCurrentThread();
 
-          auto clazz = env->FindClass("com/terrysahaidak/test/jsi/TestJSIInstaller");
+          auto runTest = env->GetStaticMethodID(globalClassRef, "runTest", "()Ljava/lang/String;");
+          auto str = (jstring)env->CallStaticObjectMethod(globalClassRef, runTest);
 
-          auto runTest = env->GetStaticMethodID(clazz, "runTest", "()Ljava/lang/String;");
-          auto str = (jstring)env->CallStaticObjectMethod(clazz, runTest);
+          const char *cStr = env->GetStringUTFChars(str, nullptr);
+
+          return jsi::String::createFromAscii(runtime, cStr);
+        });
+  }
+
+  if (methodName == "getStringPrivateField")
+  {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto env = attachCurrentThread();
+
+          auto valId = env->GetFieldID(globalClassRef, "stringField", "Ljava/lang/String;");
+
+          auto str = (jstring)env->GetObjectField(globalObjectRef, valId);
 
           const char *cStr = env->GetStringUTFChars(str, nullptr);
 

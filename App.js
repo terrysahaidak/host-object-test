@@ -36,15 +36,12 @@ const App: () => React$Node = () => {
 
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
-
-              
               <Text style={styles.sectionTitle}>
                 {/* this is from C++ JSI bindings */}
-                {global.nativeSample.runTest()}
+                {global.NativeSampleModule.runTest()}
               </Text>
-             
             </View>
-            </View>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </>

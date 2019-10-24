@@ -7,7 +7,7 @@ public class TestJSIInstaller {
         System.loadLibrary("test-jsi");
     }
 
-    public String runTest() {
-        return "1";
+    public static String runTest() {
+        return "Hello from Java via JNI+JSI";
     }
 }

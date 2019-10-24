@@ -21,12 +21,15 @@ include_directories(
 #)
 
 add_library(test-jsi SHARED
-            # source files
-            TestJSIInstaller.cpp
-            
+
             # this seems necessary to use almost any JSI API - otherwise we get linker errors
             # seems wrong to compile a file that's already getting compiled as part of the app, but ¯\_(ツ)_/¯
             ../../../../../../node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp
+        ../../../../../../node_modules/react-native/ReactCommon/jsi/jsi/jsi.h
+
+        # source files
+        TestJSIInstaller.h
+        TestJSIInstaller.cpp
 
             )
 

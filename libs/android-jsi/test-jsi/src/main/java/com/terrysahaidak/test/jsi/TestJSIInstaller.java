@@ -6,4 +6,8 @@ public class TestJSIInstaller {
     static {
         System.loadLibrary("test-jsi");
     }
+
+    public String runTest() {
+        return "1";
+    }
 }

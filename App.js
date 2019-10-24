@@ -40,7 +40,7 @@ const App: () => React$Node = () => {
               
               <Text style={styles.sectionTitle}>
                 {/* this is from C++ JSI bindings */}
-                {global.nativeTest}
+                {global.nativeSample.runTest()}
               </Text>
              
             </View>
